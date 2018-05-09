@@ -47,7 +47,7 @@ class ScoreModel(Resource):
             data = [data]
         features = self.tokenizer.texts_to_matrix(data)
         preds = self.model.predict(features)
-        keys = ['non_toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
+        keys = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
         output = dict(zip(keys, preds.transpose().tolist()))
         return output
 

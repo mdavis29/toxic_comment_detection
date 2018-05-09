@@ -29,21 +29,24 @@ if len(sys.argv) > 1:
     if '-warm' in args:
         load_weights = True
 
+# print out devices available (to see if there is a GPU)
 print(device_lib.list_local_devices())
 
+# set the system path
 system_path = os.getcwd()
 
 # set callback  dir
-log_dir = system_path + '\\' + 'test\\.logs'
+log_dir = system_path + '\\.logs'
 model_file_path = 'models/toxic_comment_DNN.h5'
 weights_file_path = "models/weights.best.hdf5"
+tokenizer_file_path = 'models/tokenizer.pkl'
 
 # load raw data
 data = pd.read_csv('data/train.csv')
 text_col = 'comment_text'
 target_cols = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
-# set up loggiong gfor tensorbord
+# set up logging for use with tensorbord
 tensorboard = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1, write_graph=True, write_images=False)
 
 # split train and test data
@@ -56,10 +59,11 @@ tokenizer.fit_on_texts(X_train_text.tolist())
 X_train = tokenizer.texts_to_matrix(X_train_text)
 X_test = tokenizer.texts_to_matrix(X_test_text)
 
+# get parameters used to setup the model architecture
 num_classes = y_test.shape[1]
 num_dims = X_train.shape[1]
 
-
+# set up the model check point to save only the best weights
 checkpoint = ModelCheckpoint(weights_file_path, monitor='val_loss', verbose=1, save_best_only=True,
                              save_weights_only=True, mode='max')
 
@@ -69,8 +73,9 @@ model.add(Dense(500, activation='relu', input_shape=(num_dims, )))
 model.add(Dropout(0.3))
 model.add(Dense(500, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(num_classes, activation='softmax'))
+model.add(Dense(num_classes, activation='sigmoid'))
 if load_weights:
+    print('loading pre trained wieghts')
     model.load_weights(weights_file_path, by_name=False)
 
 # Compile the model
@@ -96,6 +101,14 @@ print('Accuracy: ', scores[1])
 model_json = model.to_json()
 pickle.dump(model_json, open(model_file_path, 'wb'))
 
+# saving the tokenizer
+with open(tokenizer_file_path, 'wb') as handle:
+    pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# loading the tokenizer
+with open(tokenizer_file_path, 'rb') as handle:
+    tokenizer = pickle.load(handle)
+
 # load the model json
 with open(model_file_path, 'rb') as f:
     model_json = pickle.load(f)
@@ -104,9 +117,10 @@ with open(model_file_path, 'rb') as f:
 model_loaded = model_from_json(model_json)
 model_loaded.load_weights(weights_file_path, by_name=False)
 
-# test prediction
+# predict the test set
 preds = model_loaded.predict(X_test)
 
+# print out AUC by class for all the models.
 for i, j in enumerate(target_cols):
     r = roc_auc_score(np.array(y_test)[:, i], preds[:, i])
     print(j, ' auc: ', r)
