@@ -6,6 +6,7 @@ from flask import Flask, request, url_for, jsonify
 from flask_restful import Resource, Api
 import json
 import werkzeug
+import h5py
 
 host = 'http://127.0.0.1'
 port = 5000
@@ -47,7 +48,7 @@ class ScoreModel(Resource):
             data = [data]
         features = self.tokenizer.texts_to_matrix(data)
         preds = self.model.predict(features)
-        keys = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
+        keys = ['non -toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
         output = dict(zip(keys, preds.transpose().tolist()))
         return output
 
@@ -79,14 +80,11 @@ def score_model():
     json_data = request.get_json()
     text = json_data.get('text')
     if type(text) is str:
-        input_string = [text]
-    if type(input_string) is list:
-        s = ScoreModel()
-        output_dict = s.predict(input_string)
-        return json.dumps(output_dict)
+        text = [text]
     else:
-        return json.dumps('mode scoring scipped, because of input type :' + str(type(input_string)))
-
+        s = ScoreModel()
+        output_dict = s.predict(text)
+        return json.dumps(output_dict)
 
 
 if __name__ == '__main__':
