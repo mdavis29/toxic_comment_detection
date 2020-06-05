@@ -5,11 +5,11 @@ import tensorflow
 from flask import Flask, request, url_for, jsonify
 from flask_restful import Resource, Api
 import json
-import werkzeug
 import h5py
 from keras.models import model_from_json
 from keras.preprocessing.text import Tokenizer
 import pickle
+from flask import Flask, url_for, render_template, redirect
 
 
 host = 'http://127.0.0.1'
@@ -58,9 +58,14 @@ def predict( data):
 
 
 @app.route('/')
-def api_root():
-    return 'RestAPI for predictive model, to test'
+def index():
+    text=request.args.get('text', '')
+    text = text.strip()
+    output_dict = predict(text)
 
+    if len(text) > 0:
+        return render_template('score.html', text=output_dict)
+    return render_template('index.html')
 
 @app.route('/echo', methods=['POST'])
 def echo():
