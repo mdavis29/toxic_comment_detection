@@ -1,6 +1,26 @@
 
 ## README
 
+This project is a demonstration of how to use a deploy a deep learning model as a service. The
+model uses natural language processing and tensorflow neural network to estimate whether the probablilty that a text string is 'toxic' or otherwise hate speech or obesene.
+
+This project can be run three different ways,
++ as a local app (using local python interpreter)
++ as a local docker container, with the app exposed through the container
++ as a kubernetes micros service, loading the image from docker hu
+
+#### Inputs
+json payload with
+```sh
+"{\"text\":\"this is a test\"}"
+```
+
+#### Outputs
+json payload with
+```
+{"non -toxic": [0.9540797472000122], "severe_toxic": [0.011814841069281101], "obscene": [0.09778174012899399], "threat": [0.0021917244885116816], "insult": [0.31358540058135986], "identity_hate": [0.2735470235347748]}
+```
+
 ## Python project to predict Toxic Comments
 Data is from kaggle Toxic Comment Challenge
 
@@ -59,22 +79,26 @@ sudo docker tag toxiccomment:latest mdavis29/datascience_example:toxiccomment
 sudo docker push mdavis29/datascience_example:toxiccomment
 ```
 
-#### Run on Minikube
+#### Run on Minikube with a yaml file
+
 Start minikube (if testing on a local kubernetes instance)
 ```sh
  minikube start
 ```
 
-creates a Minikube deployment using the image from docker hub
-```sh
-sudo kubectl create deployment toxiccomment --image=mdavis29/datascience_example:toxiccomment
-```
+This uses a yaml file to run configure the kubernetes services, and example using
+a load-balancer is attached.
 
-exposes the service
 ```sh
-sudo kubectl expose deployment toxiccomment --type=NodePort --port=5000
-```
-Shows the url where the service is exposed
-```sh
+kubectl apply -f load-balancer-deployment.yaml
+kubectl expose deployment toxiccomment --type="LoadBalancer" --name=toxiccomment --target-port=5000 --port=5000
 minikube service toxiccomment --url
+ ```
+
+##### Clean Up Kubernetes
+remove all the services and deployments
+
+```sh
+kubectl delete services toxiccomment
+kubectl delete deployment toxiccomment
 ```
