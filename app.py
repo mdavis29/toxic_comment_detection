@@ -64,7 +64,7 @@ def index():
     output_dict = predict(text)
 
     if len(text) > 0:
-        return render_template('score.html', text=output_dict)
+        return render_template('results.html', text=output_dict)
     return render_template('index.html')
 
 @app.route('/echo', methods=['POST'])

@@ -1,16 +1,6 @@
 <!doctype html>
-<title>Hello from Flask</title>
-<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-<link href="../static/fossasia-index.css"  rel="stylesheet" type="text/css" >
-<div class="foss-task">
-  <div class="foss-view">
-    <div class="foss-sec1">
-      <div class="foss-img">
-      </div>
-      <div class="foss-text">
-Toxic Comment Detection System
-      </div>
-</div>
+<title>ToxicCommentDetection</title>
+<h2>Toxic Comment Detection System<h2>
 <div class="foss-sec2">
 	<form class="foss-form">
 	  <input class="foss-tbox" placeholder="Enter Text Here" name="text">
@@ -18,11 +8,9 @@ Toxic Comment Detection System
 	  <button class="foss-submit">
 	    Submit
 	    </button>
+<h3>Soring POST Request Serivice<h3>
+<h4>Available at /score, example request:<h4>
+curl -H "Content-Type: application/json" -X POST -d "{\"text\":\"this is a test\"}" http://127.0.0.1:5000/score
 	</div>
 	</form>
 </div>
-
-    </div>
-</div>
-</div>
-</html>
