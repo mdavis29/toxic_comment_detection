@@ -45,6 +45,9 @@ sudo docker run -it -p 5000:5000 toxiccomment:latest
 ### Deployming with Minikube
 
 #### Sending image to dockerhub for kubernetes deployment
+to deploy on Kubernetes, a container image needs to be availible on docker hub or
+a private repository. This image contains the app, and is pushed from the latest built container, after tagging the container
+
  + logs in
  + adds tag
  + pushes to docker hub
@@ -57,6 +60,11 @@ sudo docker push mdavis29/datascience_example:toxiccomment
 ```
 
 #### Run on Minikube
+Start minikube (if testing on a local kubernetes instance)
+```sh
+ minikube start
+```
+
 creates a Minikube deployment using the image from docker hub
 ```sh
 sudo kubectl create deployment toxiccomment --image=mdavis29/datascience_example:toxiccomment
@@ -64,12 +72,9 @@ sudo kubectl create deployment toxiccomment --image=mdavis29/datascience_example
 
 exposes the service
 ```sh
-sudo kubectl expose deployment toxiccomment --type=LoadBalancer --port=5000
+sudo kubectl expose deployment toxiccomment --type=NodePort --port=5000
 ```
-Shows the port mapping, where the servicce is exposed
+Shows the url where the service is exposed
 ```sh
-kubectl get services
-```
-```sh
-minikube service toxiccomment
+minikube service toxiccomment --url
 ```
