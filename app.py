@@ -11,8 +11,6 @@ from keras.preprocessing.text import Tokenizer
 import pickle
 from flask import Flask, url_for, render_template, redirect
 
-
-host = 'http://127.0.0.1'
 port = 5000
 
 app = Flask(__name__)
@@ -85,7 +83,7 @@ def score():
 
 if __name__ == '__main__':
     model, tokenizer = load_model()
-    app.run(host='0.0.0.0', threaded=False)
+    app.run(host='0.0.0.0', threaded=False, port=port)
 
 # test api from command line
 # curl -H "Content-Type: application/json" -X POST -d "{\"text\":\"this is a test\"}" http://127.0.0.1:5000/score
