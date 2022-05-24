@@ -5,4 +5,4 @@ Keras==2.3.1
 h5py==2.10.0
 Flask_RESTful==0.3.8
 scikit_learn==0.23.1
-tensorflow==2.2.0
+tensorflow==2.6.4
